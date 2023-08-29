@@ -1,0 +1,1 @@
+A Chrome extension that analyzes every website visited by the user and provides them with a weekly report.‏ 
