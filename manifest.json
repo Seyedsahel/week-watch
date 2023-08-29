@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
-    "name": "My Custom Extension",
+    "name": "Week Watch",
     "version": "1.0",
-    "description": "This is a description of my custom extension.",
+    "description": "A Chrome extension that analyzes every website visited by the user and provides them with a weekly report.",
     "icons": {
       "16": "icon16.png",
       "48": "icon48.png",
