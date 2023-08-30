@@ -1,7 +1,7 @@
 var currentURL = window.location.href;
 
 function sendLinkToWebsite(link) {
-  var url = 'https://example.comhttps://djangoworker.pythonanywhere.com/polls/giveme//your-endpoint'; // آدرس وبسایت و نقطه پایانی را در این قسمت قرار دهید
+  var url = 'http://127.0.0.1:8000/giveme/'; // آدرس وبسایت و نقطه پایانی را در این قسمت قرار دهید
   var data = {
     link: link
   };
@@ -19,7 +19,7 @@ function sendLinkToWebsite(link) {
   })
   .catch(function(error) {
     // خطا در ارسال درخواست
-    console.error('خطا:', error);
+    // console.error('خطا:', error);
   });
 }
 
