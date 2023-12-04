@@ -8,6 +8,7 @@
       "48": "icon48.png",
       "128": "icon128.png"
     },
+
     "browser_action": {
       "default_popup": "popup.html",
       "default_icon": {
@@ -16,18 +17,18 @@
         "128": "icon128.png"
       }
     },
+
     "permissions": [
       "tabs",
-      "activeTab"
+      "webRequest",
+      "webRequestBlocking",
+      "<all_urls>"
     ],
+
     "background": {
       "scripts": ["background.js"],
-      "persistent": false
-    },
-    "content_scripts": [
-      {
-        "matches": ["http://*/*", "https://*/*"],
-        "js": ["content.js"]
-      }
-    ]
+      "persistent": true
+    }
+    
   }
+

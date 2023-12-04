@@ -6,7 +6,6 @@ from .models import HistoryRecord
 def GetRecord(request):
     if request.method == "POST":
 
-
         new_record = HistoryRecord(link=str(request.POST.get("link")))
         new_record.save()
 
