@@ -6,9 +6,9 @@ from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+AUTH_USER_MODEL = 'accounts.User'
 
-
-deploy = True
+deploy = False
 if(deploy):
     # deploy
     SECRET_KEY = os.getenv('SECRET_KEY', 'LIARA_URL is not set.')
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
 
 INSTALLED_APPS += [
     'info',
+    'accounts'
 ]
 
 CORS_ALLOWED_ORIGINS = [
