@@ -1,3 +1,4 @@
+from email.message import EmailMessage
 from .serializers import *
 from .models import *
 from django.http import HttpResponse, JsonResponse
@@ -7,9 +8,17 @@ def GetRecord(request):
     if request.method == "POST":
         data = request.POST
 
-        link = data.get("link")
-        domain = link.split("/")[2]
 
+        link = data.get("link")
+        email = data.get("email")
+
+        if not email:
+            return JsonResponse({'message': 'email is empty.'}, status=400)
+        
+        if not link:
+            return JsonResponse({'message': 'link is empty.'}, status=400)
+
+        domain = link.split("/")[2]
 
         
         try:
@@ -19,11 +28,13 @@ def GetRecord(request):
             website.save()
 
 
-        email = data.get("email")
+
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            return JsonResponse({'message': 'user not found.'}, status=403) 
+            user = User(email=email)
+            user.set_password("12345678")
+            user.save()
 
 
 

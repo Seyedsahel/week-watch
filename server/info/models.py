@@ -24,7 +24,7 @@ class HistoryRecord(models.Model):
 
     def __str__(self):
         formatted_date = self.created.strftime("%d %H:%M:%S")
-        return f"{self.link} - {formatted_date}"
+        return f"{self.user.email} - {self.website.domain} - {formatted_date}"
 
 #-----------------------------------------------------
 
