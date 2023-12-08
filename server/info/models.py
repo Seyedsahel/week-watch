@@ -20,9 +20,11 @@ class HistoryRecord(models.Model):
     link = models.CharField(max_length=100)
     website = models.ForeignKey(Website,null=True,blank=True,on_delete=models.CASCADE,related_name="records")
     user = models.ForeignKey(User,null=True,blank=True,on_delete=models.CASCADE,related_name="records")
+    created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.link
+        formatted_date = self.created.strftime("%d %H:%M:%S")
+        return f"{self.link} - {formatted_date}"
 
 #-----------------------------------------------------
 

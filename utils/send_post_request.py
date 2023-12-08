@@ -1,7 +1,11 @@
 import requests
 
-url = 'https://getinfo.iran.liara.run/record/'
-data = {'link': 'http://example.com'}
-response = requests.post(url, data=data)
+server = 'https://getinfo.iran.liara.run/record/'
+local = 'http://localhost:8000/record/'
+data = {
+    'link': 'http://example.com',
+    'email': 'TahaM8000@gmail.com'
+    }
+response = requests.post(local, data=data)
 
 print(response.text)
