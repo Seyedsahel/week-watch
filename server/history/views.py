@@ -3,6 +3,7 @@ from .serializers import *
 from .models import *
 from django.http import HttpResponse, JsonResponse
 from .models import *
+from websites.models import Website,WebSiteCategory
 # -------------------------------------------------------------------------------------------------------------------------------
 def GetRecord(request):
     if request.method == "POST":
@@ -26,7 +27,6 @@ def GetRecord(request):
         except Website.DoesNotExist:
             website = Website(domain=domain)
             website.save()
-
 
 
         try:

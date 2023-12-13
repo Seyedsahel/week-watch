@@ -38,8 +38,9 @@ INSTALLED_APPS = [
 
 
 INSTALLED_APPS += [
-    'info',
-    'accounts'
+    'history',
+    'accounts',
+    'websites',
 ]
 
 CORS_ALLOWED_ORIGINS = [
