@@ -4,6 +4,8 @@ from .models import *
 from django.http import HttpResponse, JsonResponse
 from .models import *
 from websites.models import Website,WebSiteCategory
+from websites.views import scrap
+import threading
 # -------------------------------------------------------------------------------------------------------------------------------
 def GetRecord(request):
     if request.method == "POST":
@@ -27,6 +29,14 @@ def GetRecord(request):
         except Website.DoesNotExist:
             website = Website(domain=domain)
             website.save()
+
+
+        if(website.categories.all().count() != 0):
+            pass
+        else:
+            thread = threading.Thread(target=scrap)
+            thread.start()
+
 
 
         try:

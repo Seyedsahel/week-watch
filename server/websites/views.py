@@ -1,3 +1,6 @@
 from django.shortcuts import render
-
-# Create your views here.
+import time
+# -------------------------------------------------------------------------------------------------------------------------------
+def scrap():
+    time.sleep(5)
+    print("I love ypu Sahel")

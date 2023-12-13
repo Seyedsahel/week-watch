@@ -9,7 +9,7 @@ class WebSiteCategory(models.Model):
 #-----------------------------------------------------
 class Website(models.Model):
     domain = models.URLField(unique=True)
-    category = models.ManyToManyField(WebSiteCategory,related_name="websites")
+    categories = models.ManyToManyField(WebSiteCategory,related_name="websites")
 
     def __str__(self):
         return self.domain
