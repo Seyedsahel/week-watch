@@ -8,7 +8,7 @@ class WebSiteCategory(models.Model):
         return self.name
 #-----------------------------------------------------
 class Website(models.Model):
-    domain = models.URLField(unique=True)
+    domain = models.CharField(unique=True,max_length=100)
     categories = models.ManyToManyField(WebSiteCategory,related_name="websites")
 
     def __str__(self):

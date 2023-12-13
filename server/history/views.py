@@ -4,7 +4,7 @@ from .models import *
 from django.http import HttpResponse, JsonResponse
 from .models import *
 from websites.models import Website,WebSiteCategory
-from websites.views import scrap
+from websites.views import FindWebsiteCategory
 import threading
 # -------------------------------------------------------------------------------------------------------------------------------
 def GetRecord(request):
@@ -30,12 +30,10 @@ def GetRecord(request):
             website = Website(domain=domain)
             website.save()
 
-
-        if(website.categories.all().count() != 0):
-            pass
-        else:
-            thread = threading.Thread(target=scrap)
+        if(website.categories.all().count() == 0):
+            thread = threading.Thread(target=FindWebsiteCategory, kwargs={'website': website,})
             thread.start()
+            
 
 
 
