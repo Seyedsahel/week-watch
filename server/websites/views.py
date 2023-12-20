@@ -75,7 +75,6 @@ def scrap(given_url,given_categories):
             status+=1
         print(p_text)
         if status >=2 :
-            detected_language = detect(p_text)
             keywords = find_keywords_e(p_text)
             
         else:
@@ -84,7 +83,7 @@ def scrap(given_url,given_categories):
                 class_name = paragraph.get('class') #گرفتن اسم کلاس های تگ p
                 if class_name != 'None':
                     p_text=soup.find('p',class_=class_name).text#پیدا کردن متن توی تگ
-                detected_language = detect(p_text)
+                
                 keywords = find_keywords_e(p_text)
             
                 if len(keywords)>2:
@@ -98,7 +97,7 @@ def scrap(given_url,given_categories):
                 count+=1 
             else: 
                 cleans.append(keyword)           
-        return cleans,detected_language
+        return cleans
         
 
     def find_category():
@@ -126,13 +125,13 @@ def scrap(given_url,given_categories):
         if page.status_code == 200:
             soup =BeautifulSoup(page.text,"html.parser") #گرفتن صفحه 
                 #............... پیدا کردن کلمات کلیدی.......................
-            main_keyword,detected_lan=find_keywords(soup)
+            main_keyword=find_keywords(soup)
             print(main_keyword)
             
         else:
             print(page.status_code)
-        
-        
+        word=main_keyword[0]
+        detected_lan = detect(word[0])
         if detected_lan == 'fa':
                     for key in cats_dict_p:
                         values = cats_dict_p[key]
