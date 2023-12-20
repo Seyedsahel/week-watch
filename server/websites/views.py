@@ -16,7 +16,15 @@ def FindWebsiteCategory(website):
     website.categories.add(*WebSiteCategory.objects.filter(name__in=cats))
     website.save()
 # ----------------------------------web scraping---------------------------------------------------------------------------------------------
+from bs4 import BeautifulSoup
+import requests
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.probability import FreqDist
+
 def scrap(given_url,given_categories):
+    print(given_url)
     def find_keywords(text):
         tokens = word_tokenize(text)
     # حذف کلمات توقفی
@@ -26,26 +34,14 @@ def scrap(given_url,given_categories):
         keywords = fdist.most_common(12)  # تعداد کلمات کلیدی 
         return keywords
 
-
-    url=given_url
-    
-    title=''
-    cleans=[]
-    count=0
-    junk=['از','به','با','برای','در','هم','و','اگر','همراه','حتما','قطعا','کاملا','است','هست','اره','هستید','دنبال','،','را','لطفا','منتظر','بمانید']
-    page=requests.get(url)
-
-    if page.status_code == 200:
-        soup =BeautifulSoup(page.text,"html.parser") #گرفتن صفحه 
-        try:
-            title = soup.find('title').text
-        except AttributeError:
-            print("سایت احمقش تگ تایتل نداره")
-    paragraphs = soup.find_all('p') #پیدا کردن پاراگراف ها
-    for paragraph in paragraphs:
+    def find_paragraph(paragraph,soup):
+        junk=['از','به','با','برای','در','هم','و','اگر','همراه','حتما','قطعا','کاملا','است','هست','اره','هستید','دنبال','،','را','لطفا','منتظر','بمانید']
+        cleans=[]
+        count=0
         class_name = paragraph.get('class') #گرفتن اسم کلاس های تگ p
         if class_name != 'None':
             p_text=soup.find('p',class_=class_name).text#پیدا کردن متن توی تگ
+            
             keywords = find_keywords(p_text)
             for keyword in keywords: 
                 temp = keyword[0] 
@@ -54,9 +50,40 @@ def scrap(given_url,given_categories):
             
                 else: 
                     cleans.append(keyword)
-    else:
-        print(page.status_code)
+                    
+        print(f"count:{count}")           
+        return cleans
+        
 
-       
+    def find_category():
+        url=given_url
+        main_keyword=[]
+        title=''
+        page=requests.get(url)
 
-    return cleans
+        if page.status_code == 200:
+            soup =BeautifulSoup(page.text,"html.parser") #گرفتن صفحه 
+            try:
+                title = soup.find('title').text
+            except AttributeError:
+                print("سایت احمقش تگ تایتل نداره")
+                #............... پیدا کردن کلمات کلیدی.......................
+            paragraphs = soup.find_all('p') #پیدا کردن پاراگراف ها
+            for paragraph in paragraphs:
+                main_keyword=find_paragraph(paragraph,soup)
+                if len(main_keyword)>2:
+                    break
+        else:
+            print(page.status_code)
+      
+
+        return main_keyword
+
+#چک کردن کتگوری پیدا شده با کتگوری داده شده اینجا هن.ز کتگوری پیدا نمیشه صرفا کلمات کلیدی هستن
+    found_categories=find_category()
+    final_categories=[]
+    for cat in found_categories:
+        if cat[0] in given_categories:
+            final_categories.append(cat[0])
+
+    return final_categories
