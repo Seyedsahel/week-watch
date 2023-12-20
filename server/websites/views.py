@@ -17,38 +17,24 @@ def FindWebsiteCategory(website):
     website.save()
 # ----------------------------------web scraping---------------------------------------------------------------------------------------------
 def scrap(given_url,given_categories):
-    url = given_url
-    count1=0
-    count2=0
+    url=given_url
+    
+    title=''
+    page=requests.get(url)
 
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.content, "html.parser")
-
-        title_element = soup.find("title")
-
-        if title_element:
-            print("onvan site:", title_element.text)
-        else:
-            print("onsor peyda nshod.")
-
-        meta_tags = soup.find_all("meta")
-        category = None
-
-        for tag in meta_tags:
-            if tag.get("name") == "category":
-                category = tag.get("content")
-                break
-
-        if category:
-            print("category:", category)
-        else:
-            count2 +=1
-            print("daste bandi peyda nshod",count2)
-            
+    if page.status_code == 200:
+        soup =BeautifulSoup(page.text,"html.parser") #گرفتن صفحه 
+        try:
+            title = soup.find('title').text
+        except AttributeError:
+            print("سایت احمقش تگ تایتل نداره")
+    paragraphs = soup.find_all('p') #پیدا کردن پاراگراف ها
+    for paragraph in paragraphs:
+        class_name = paragraph.get('class') #گرفتن اسم کلاس های تگ p
+        if class_name != 'None':
+            p_text=soup.find('p',class_=class_name).text#پیدا کردن متن توی تگ
+        
     else:
-        count1 +=1
-        print("khata dar daryaft web page", response.status_code,count1)
+        print(page.status_code)
 
-    return title_element
+    return p_text
