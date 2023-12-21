@@ -23,8 +23,15 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.probability import FreqDist
 from langdetect import detect
+import json
 
 def scrap(given_url,given_categories):
+    with open('data.json', 'r') as file:
+        data = json.load(file)
+
+    loaded_cats_dict_p = data['cats_dict_p']
+    loaded_cats_dict_e = data['cats_dict_e']
+    loaded_junk = data['junk']
     def find_keywords_e(text):
         tokens = word_tokenize(text)
         stop_words = set(stopwords.words('english'))  # تنظیم زبان متن مورد نظر خود
@@ -36,15 +43,7 @@ def scrap(given_url,given_categories):
 
 
     def find_keywords(soup):
-        junk = ['از', 'به', 'با', 'برای', 'در', 'هم', 'و','اگر', 'هست', 'هستید', 'دنبال', '،', 'را',
-                   'منتظر', 'بمانید', 'کردن', 'بودن', 'داشتن','شدن', 'رفتن', 'آمدن', 'بسیار', 'خیلی',
-                       'کاملاً', 'تماماً', 'همیشه', 'همانا', 'این', 'آن', 'اینها', 'آنها', 'بار', 'مرتبه', 'دفعه',
-                         'فاصله', 'نقطه', 'خط', 'تا', 'باشه', 'بوده', 'باشد','باشید', 'باشند', 'دارد', 'داره', 'داشته',
-                             'داشتند', 'داشتید', 'داشتیم', 'هستم', 'هستی', 'هستیم','هستند', 'خیلی‌ها', 'بسیاری', 'بیشتر', 'کمتر', 'تعدادی', 'برخی', 'همه',
-                                 'هیچ', 'کسی', 'چند', 'چیزی', 'بیش', 'کم', 'زیاد', 'کمی', 'عمدتا', 'اکثراً', 'به‌طور', 'بنابراین',
-                                   'بطور', 'بنابر', 'ناچار', 'علاوه', 'به‌علاوه', 'اصولاً', 'عموماً', 'کلیاً', 'غالباً', 'نسبتاً', 'به‌طورکلی', 'از', 'به', 'با', 'برای', 'در', 'هم', 'و', 'اگر', 'هست', 'هستید',
-                                     'دنبال', '،', 'را', 'منتظر', 'بمانید', 'کردن', 'بودن', 'داشتن', 'شدن', 'رفتن', 'آمدن', 'بسیار', 'خیلی', 'کاملاً', 'تماماً', 'همیشه', 'همانا', 'این', 'آن', 'اینها', 'آنها', 'بار', 'مرتبه', 'دفعه', 'فاصله', 'نقطه', 'خط', 'تا', 'باشه', 'بوده', 'باشد', 'باشید', 'باشند', 'دارد', 'داره', 'داشته', 
-                                     'داشتند', 'داشتید', 'داشتیم', 'هستم', 'هستی', 'هستیم', 'هستند', 'خیلی‌ها', 'بسیاری', 'بیشتر', 'کمتر', 'تعدادی', 'برخی', 'همه', 'هیچ', 'کسی', 'چند', 'چیزی', 'بیش', 'کم', 'زیاد', 'کمی', 'عمدتا', 'اکثراً', 'به‌طور', 'بنابراین', 'بطور', 'بنابر']
+       
         cleans=[]
         count=0
         status=0
@@ -93,7 +92,7 @@ def scrap(given_url,given_categories):
             
         for keyword in keywords: 
             temp = keyword[0] 
-            if temp in junk: 
+            if temp in loaded_junk: 
                 count+=1 
             else: 
                 cleans.append(keyword)           
@@ -101,22 +100,7 @@ def scrap(given_url,given_categories):
         
 
     def find_category():
-        cats_dict_p = {
-        'فروشگاهی': ['خرید', 'فروش', 'نمایندگی', 'محصول', 'تخفیف', 'خرید اینترنتی', 'پرداخت', 'تحویل', 'قیمت', 'مغازه'],
-        'اداری': ['ثبت', 'اطلاعات', 'مستندات', 'کارمندان', 'مدیریت', 'امور', 'دفتر', 'قرارداد', 'کمیسیون', 'سازمان'],
-        'آموزشی': ['دانشجو', 'دانشگاه', 'درس', 'استاد', 'آموزش', 'کلاس', 'دبیرخانه', 'پژوهش', 'کتابخانه', 'آزمون','تمرین','دوره','کتاب'],
-        'سرگرمی': ['بازی', 'فیلم', 'موسیقی', 'کنسرت', 'تئاتر', 'سینما', 'هنر', 'تفریح', 'گیم', 'هیجان','کتاب'],
-        'اجتماعی': ['جمعیت', 'اعضا', 'اجتماع', 'مراسم', 'جشن', 'تشریفات', 'همایش', 'سخنرانی', 'مردم', 'رهبر'],
-        'خبری': ['اخبار', 'روزنامه', 'خبرگزاری', 'سیاسی', 'اقتصادی', 'فرهنگی', 'ورزشی', 'بین‌المللی', 'تکنولوژی', 'علمی']
-        }
-        cats_dict_e = {
-        'فروشگاهی': ['shopping', 'sale', 'agency', 'product', 'discount', 'online shopping', 'payment', 'delivery', 'price', 'store'],
-        'اداری': ['registration', 'information', 'documents', 'employees', 'management', 'affairs', 'office', 'contract', 'commission', 'organization'],
-        'آموزشی': ['student', 'university', 'lesson', 'professor', 'education', 'class', 'secretariat', 'research', 'library', 'exam', 'exercise', 'course'],
-        'سرگرمی': ['game', 'movie', 'music', 'concert', 'theater', 'cinema', 'art', 'entertainment', 'gaming', 'excitement'],
-        'اجتماعی': ['community', 'members', 'society', 'ceremony', 'celebration', 'event', 'speech', 'people', 'leader'],
-        'خبری': ['news', 'newspaper', 'news agency', 'political', 'economic', 'cultural', 'sports', 'international', 'technology', 'scientific']
-        }
+        
         
         main_keyword=[]
         final_categories=[]
@@ -133,16 +117,16 @@ def scrap(given_url,given_categories):
         word=main_keyword[0]
         detected_lan = detect(word[0])
         if detected_lan == 'fa':
-                    for key in cats_dict_p:
-                        values = cats_dict_p[key]
+                    for key in loaded_cats_dict_p:
+                        values = loaded_cats_dict_p[key]
                         for value in values:
                             for k in main_keyword:
                                 if value in k[0]:
                                     final_categories.append(key)
                         
         else:
-            for key in cats_dict_e:
-                        values = cats_dict_p[key]
+            for key in loaded_cats_dict_e:
+                        values = loaded_cats_dict_e[key]
                         for value in values:
                             for k in main_keyword:
                                 if value in k[0]:
