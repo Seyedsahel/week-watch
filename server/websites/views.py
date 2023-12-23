@@ -130,7 +130,6 @@ def scrape(given_url,given_categories):
                 detected_lan = detect(word[0])
                 break
 
-        detected_lan = detect(word[0])
         if detected_lan == 'fa':
                     for key in loaded_cats_dict_p:
                         values = loaded_cats_dict_p[key]
