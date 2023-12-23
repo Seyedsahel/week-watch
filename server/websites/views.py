@@ -1,5 +1,4 @@
 from django.shortcuts import render
-import time
 from .models import WebSiteCategory
 from bs4 import BeautifulSoup
 import requests
@@ -29,12 +28,12 @@ def find_link(url):
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
         links = soup.find_all('a')
-        http_links = []  
+        https_links = []  
         for link in links:
             link_url = link.get('href')
             if link_url and link_url.startswith('http'):
-                http_links.append(link_url)
-        return http_links
+                https_links.append(link_url)
+        return https_links
     
 def scrape(given_url,given_categories):
     with open('data.json', 'r') as file:
@@ -125,7 +124,12 @@ def scrape(given_url,given_categories):
             
         else:
             print(page.status_code)
-        word=main_keyword[0]
+        
+        for word in main_keyword:
+            if word[0].isalpha():
+                detected_lan = detect(word[0])
+                break
+
         detected_lan = detect(word[0])
         if detected_lan == 'fa':
                     for key in loaded_cats_dict_p:
