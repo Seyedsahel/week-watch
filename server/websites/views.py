@@ -1,31 +1,41 @@
 from django.shortcuts import render
-import time
 from .models import WebSiteCategory
 from bs4 import BeautifulSoup
 import requests
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.probability import FreqDist
+from langdetect import detect
+import json
 # -------------------------------------------------------------------------------------------------------------------------------
 def FindWebsiteCategory(website):
     cats_name = list(WebSiteCategory.objects.values_list('name', flat=True))
 
-    cats = scrap(f"https://{website.domain}/", cats_name)
+    cats = scrape(f"https://{website.domain}/", cats_name)
     print(cats)
-    
+    if len(cats)==0:
+        links=find_link(f"https://{website.domain}/")
+        for i in links:
+            cats=scrape(i)
+            if len(cats)!=0:
+                break
     website.categories.add(*WebSiteCategory.objects.filter(name__in=cats))
     website.save()
 # ----------------------------------web scraping---------------------------------------------------------------------------------------------
-from bs4 import BeautifulSoup
-import requests
-import nltk
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-from nltk.probability import FreqDist
-from langdetect import detect
-import json
-
-def scrap(given_url,given_categories):
+def find_link(url):
+    response = requests.get(url)
+    
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        links = soup.find_all('a')
+        https_links = []  
+        for link in links:
+            link_url = link.get('href')
+            if link_url and link_url.startswith('http'):
+                https_links.append(link_url)
+        return https_links
+    
+def scrape(given_url,given_categories):
     with open('data.json', 'r') as file:
         data = json.load(file)
 
@@ -114,8 +124,12 @@ def scrap(given_url,given_categories):
             
         else:
             print(page.status_code)
-        word=main_keyword[0]
-        detected_lan = detect(word[0])
+        
+        for word in main_keyword:
+            if word[0].isalpha():
+                detected_lan = detect(word[0])
+                break
+
         if detected_lan == 'fa':
                     for key in loaded_cats_dict_p:
                         values = loaded_cats_dict_p[key]
@@ -142,4 +156,3 @@ def scrap(given_url,given_categories):
             final_categories.append(cat[0])
 
     return final_categories
-    
