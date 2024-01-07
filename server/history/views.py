@@ -10,6 +10,7 @@ import threading
 def GetRecord(request):
     if request.method == "POST":
         data = request.POST
+        print(data)
 
 
         link = data.get("link")

@@ -7,6 +7,40 @@ from nltk.corpus import stopwords
 from nltk.probability import FreqDist
 from langdetect import detect
 import json
+from django.http import HttpResponse, JsonResponse
+from .models import Website,WebSiteCategory
+import threading
+# -------------------------------------------------------------------------------------------------------------------------------
+def GetWebsiteCategory(request):
+    if request.method == "POST":
+        data = request.POST
+
+        link = data.get("link")
+        domain = link.split("/")[2]
+        try:
+            website = Website.objects.get(domain=domain)
+        except Website.DoesNotExist:
+            website = Website(domain=domain)
+            website.save()
+            # return JsonResponse({'message': 'The url was not found in the database.'}, status=400)    
+
+        if(website.categories.all().count() == 0):
+            print("--new site--")
+            thread = threading.Thread(target=FindWebsiteCategory, kwargs={'website': website,})
+            thread.start()
+
+        categories = website.categories.all()
+        category_list = [category.name for category in categories]
+
+        data = {
+            'url': link,
+            'domain': website.domain,
+            'categories': category_list
+        }
+
+        return JsonResponse(data, status=200)
+    else:
+        return JsonResponse({'message': 'Only POST method is allowed.'}, status=405)
 # -------------------------------------------------------------------------------------------------------------------------------
 def FindWebsiteCategory(website):
     cats_name = list(WebSiteCategory.objects.values_list('name', flat=True))
