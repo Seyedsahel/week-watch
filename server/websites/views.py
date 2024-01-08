@@ -11,6 +11,7 @@ from django.http import HttpResponse, JsonResponse
 from .models import Website,WebSiteCategory
 import threading
 from . import data
+import chardet
 # -------------------------------------------------------------------------------------------------------------------------------
 def GetWebsiteCategory(request):
     if request.method == "POST":
@@ -62,7 +63,9 @@ def find_link(url):
     response = requests.get(url)
     
     if response.status_code == 200:
-        soup = BeautifulSoup(response.text, 'html.parser')
+        encoding = chardet.detect(response.content)["encoding"]
+        html = response.content.decode(encoding)
+        soup = BeautifulSoup(html, 'html.parser')
         links = soup.find_all('a')
         https_links = []  
         for link in links:
@@ -156,7 +159,9 @@ def scrape(given_url,given_categories):
 
         if page.status_code == 200:
             print(f"page.status_code:{page.status_code}")
-            soup =BeautifulSoup(page.text,"html.parser") 
+            encoding = chardet.detect(page.content)["encoding"]
+            html = page.content.decode(encoding)
+            soup = BeautifulSoup(html, 'html.parser')
 #............... finding keywords ............................
             main_keyword=find_keywords(soup)
             
