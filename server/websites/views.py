@@ -10,6 +10,7 @@ import json
 from django.http import HttpResponse, JsonResponse
 from .models import Website,WebSiteCategory
 import threading
+from . import data
 # -------------------------------------------------------------------------------------------------------------------------------
 def GetWebsiteCategory(request):
     if request.method == "POST":
@@ -45,9 +46,9 @@ def GetWebsiteCategory(request):
 def FindWebsiteCategory(website):
     cats_name = list(WebSiteCategory.objects.values_list('name', flat=True))
     links=[]
-    cats = scrape(f"https://{website.domain}/", cats_name)
+    cats , status_code= scrape(f"https://{website.domain}/", cats_name)
     print(cats)
-    if len(cats)==0:
+    if len(cats)==0 and status_code==200:
         links=find_link(f"https://{website.domain}/")
         if len(links)>0:
             for i in links:
@@ -71,12 +72,12 @@ def find_link(url):
         return https_links
     
 def scrape(given_url,given_categories):
-    with open('D:\data.json', 'r') as file:
-        data = json.load(file)
+    unscraped_urls=[]
+    
 
-    loaded_cats_dict_p = data['cats_dict_p']
-    loaded_cats_dict_e = data['cats_dict_e']
-    loaded_junk = data['junk']
+    loaded_cats_dict_p = data.Getdict_p()
+    loaded_cats_dict_e = data.Getdict_e()
+    loaded_junk = data.Getjunk()
     def find_keywords_e(text):
         tokens = word_tokenize(text)
         stop_words = set(stopwords.words('english'))  
@@ -91,6 +92,7 @@ def scrape(given_url,given_categories):
        
         cleans=[]
         keywords=[]
+        
         count=0
         status=0
         p_text=""
@@ -147,7 +149,7 @@ def scrape(given_url,given_categories):
 
     def find_category():
         
-        
+        detected_lan=''
         main_keyword=[]
         final_categories=[]
         page=requests.get(given_url)
@@ -160,14 +162,17 @@ def scrape(given_url,given_categories):
             
             
         else:
+            unscraped_urls.append(given_url)
             print(f"page.status_code:{page.status_code}")
+           
         if len(main_keyword)>0:
             for word in main_keyword:
                 if word[0].isalpha():
                     detected_lan = detect(word[0])
                     break
-
-            if detected_lan == 'fa':
+            if detected_lan =='':
+                detected_lan=='fa'
+            if detected_lan == 'fa' or 'ur':
                         for key in loaded_cats_dict_p:
                             values = loaded_cats_dict_p[key]
                             for value in values:
@@ -183,13 +188,12 @@ def scrape(given_url,given_categories):
                                     if value in k[0]:
                                         final_categories.append(key)
 
-        return final_categories
+        return final_categories,page.status_code
 
 
-    found_categories=find_category()
+    found_categories,status_code=find_category()
     final_categories=[]
     for cat in found_categories:
         if cat[0] in given_categories:
             final_categories.append(cat[0])
-
-    return found_categories
+    return found_categories,status_code
