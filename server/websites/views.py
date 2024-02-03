@@ -12,6 +12,9 @@ from .models import Website,WebSiteCategory
 import threading
 from . import data
 import chardet
+import nltk
+nltk.download('punkt')
+nltk.download('stopwords')
 # -------------------------------------------------------------------------------------------------------------------------------
 def GetWebsiteCategory(request):
     if request.method == "POST":
@@ -132,7 +135,7 @@ def scrape(given_url,given_categories):
             for paragraph in paragraphs:
                 class_name = paragraph.get('class') 
                 if class_name != 'None':
-                    p_text=soup.find('p',class_=class_name).text
+                    p_text=p_text+soup.find('p',class_=class_name).text
                 
                 keywords = find_keywords_e(p_text)
             

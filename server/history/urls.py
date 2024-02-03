@@ -1,8 +1,9 @@
 from django.urls import path
 from .views import *
-from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
     path('record/',GetRecord),
-     path('fuck/',my_view),
+    path('record/onWebsite/',get_hours_on_website),
+    path('record/onCategoryWebsites/',get_hours_on_category_websites),
+    path('record/onCategory/',get_hours_on_category),
 ]
