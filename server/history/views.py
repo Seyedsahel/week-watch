@@ -6,7 +6,11 @@ from websites.models import Website,WebSiteCategory
 from websites.views import FindWebsiteCategory
 import threading
 from django.db.models import ExpressionWrapper, F, DurationField, Sum
-from datetime import datetime
+from datetime import datetime, timedelta
+from django.http import JsonResponse
+from django.views import View
+from .models import HistoryRecord, Website
+from django.db.models import Count
 # -------------------------------------------------------------------------------------------------------------------------------
 def GetRecord(request):
     print("---------------------------------")
@@ -280,4 +284,64 @@ def get_hours_on_category(request):
         return JsonResponse({'message': cat_data})
     else:
         return JsonResponse({'message': 'Only POST method is allowed.'}, status=405)
+#-------------------------------------------------------------------------------------------------------------------------------
+class WebsiteVisitsOnWeekAPI(View):
+    def post(self, request):
+        domain = request.POST.get('domain')
+
+        now = datetime.now()
+        start_time = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        start_time -= timedelta(days=start_time.weekday())
+        end_time = start_time + timedelta(days=7)
+
+        try:
+            website = Website.objects.get(domain=domain)
+        except Website.DoesNotExist:
+            return JsonResponse({'message': 'website not found!'}, status=404)
+
+        visits = HistoryRecord.objects.filter(
+            website=website,
+            created__gte=start_time,
+            created__lt=end_time
+        )
+
+        unique_visits = []
+        visited_users = set()
+        for visit in visits:
+            user_id = visit.user.id
+            created = visit.created
+
+            if (user_id, created.hour) in visited_users:
+                continue
+
+            visited_users.add((user_id, created.hour))
+            unique_visits.append(visit)
+
+        visit_count = len(unique_visits)
+
+        return JsonResponse({"visits": visit_count})
+#-------------------------------------------------------------------------------------------------------------------------------
+class WebsiteUniqueVisitsOnWeekAPI(View):
+    def post(self, request):
+        domain = request.POST.get('domain')
+
+        now = datetime.now()
+        start_time = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        start_time -= timedelta(days=start_time.weekday())
+        end_time = start_time + timedelta(days=7)
+
+        try:
+            website = Website.objects.get(domain=domain)
+        except Website.DoesNotExist:
+            return JsonResponse({'message': 'website not found!'}, status=404)
+
+        visits = HistoryRecord.objects.filter(
+            website=website,
+            created__gte=start_time,
+            created__lt=end_time
+        ).values('user').annotate(user_count=Count('user'))
+
+        visit_count = visits.count()
+
+        return JsonResponse({"visits": visit_count})
 #-------------------------------------------------------------------------------------------------------------------------------
