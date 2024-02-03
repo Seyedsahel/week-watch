@@ -12,6 +12,9 @@ from .models import Website,WebSiteCategory
 import threading
 from . import data
 import chardet
+import nltk
+nltk.download('punkt')
+nltk.download('stopwords')
 # -------------------------------------------------------------------------------------------------------------------------------
 def GetWebsiteCategory(request):
     if request.method == "POST":

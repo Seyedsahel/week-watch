@@ -6,8 +6,10 @@ from .models import *
 from websites.models import Website,WebSiteCategory
 from websites.views import FindWebsiteCategory
 import threading
+import datetime
 # -------------------------------------------------------------------------------------------------------------------------------
 def GetRecord(request):
+    print("---------------------------------")
     if request.method == "POST":
         data = request.POST
         print(data)
@@ -15,6 +17,7 @@ def GetRecord(request):
 
         link = data.get("link")
         email = data.get("email")
+        action = data.get("action")
 
         if not email:
             return JsonResponse({'message': 'email is empty.'}, status=400)
@@ -22,7 +25,13 @@ def GetRecord(request):
         if not link:
             return JsonResponse({'message': 'link is empty.'}, status=400)
 
-        domain = link.split("/")[2]
+        try:
+            domain = link.split("/")[2]
+        except IndexError:
+            if(link == ""):
+                return JsonResponse({'message': 'link is empty.'}, status=400)
+            else:
+                return JsonResponse({'message': 'link not True.'}, status=400)
 
         
         try:
@@ -34,7 +43,7 @@ def GetRecord(request):
         if(website.categories.all().count() == 0):
             thread = threading.Thread(target=FindWebsiteCategory, kwargs={'website': website,})
             thread.start()
-            
+            pass
 
 
 
@@ -46,13 +55,39 @@ def GetRecord(request):
             user.save()
 
 
-
-        new_record = HistoryRecord(
+        if(action == 'create'):
+            new_record = HistoryRecord(
             link = link,
             website = website,
             user = user)
 
-        new_record.save()
+            new_record.save()
+        elif(action == 'updated'):
+            try:
+                record = HistoryRecord.objects.filter(user=user).order_by('-id').first()
+            except HistoryRecord.DoesNotExist:
+                return JsonResponse({'message': 'record not exist.'}, status=400)
+
+            
+            if(record.link != link):
+                new_record = HistoryRecord(
+                    link = link,
+                    website = website,
+                    user = user)
+
+                new_record.save()
+                record.next_record = new_record
+            record.save()
+
+        else:
+            try:
+                record = HistoryRecord.objects.filter(link=link,user=user)
+            except HistoryRecord.DoesNotExist:
+                return JsonResponse({'message': 'record not exist.'}, status=400)
+            
+            
+
+        
 
 
         return JsonResponse({'message': 'link recorded.'})
