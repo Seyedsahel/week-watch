@@ -402,3 +402,101 @@ class WebsiteUniqueVisitsOnWeekAPI(View):
         })
 
 #-------------------------------------------------------------------------------------------------------------------------------
+class TopVisitedWebsitesAPI(View):
+    def get_top_visited_websites(self, websites, start_time, end_time):
+        top_websites = []
+
+        for website in websites:
+            visits = HistoryRecord.objects.filter(
+                website=website,
+                created__gte=start_time,
+                created__lt=end_time
+            ).count()
+
+            top_websites.append((website, visits))
+
+        top_websites.sort(key=lambda x: x[1], reverse=True)
+
+        return top_websites[:5]
+
+    def get(self, request):
+        now = datetime.now()
+        start_time_year = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        end_time_year = start_time_year.replace(year=start_time_year.year + 1)
+
+        start_time_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        end_time_month = start_time_month.replace(month=start_time_month.month + 1)
+
+        start_time_week = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        start_time_week -= timedelta(days=start_time_week.weekday())
+        end_time_week = start_time_week + timedelta(days=7)
+
+        start_time_day = start_time_week - timedelta(days=1)
+        end_time_day = start_time_week
+
+        websites = Website.objects.all()
+
+        top_websites_year = self.get_top_visited_websites(websites, start_time_year, end_time_year)
+        top_websites_month = self.get_top_visited_websites(websites, start_time_month, end_time_month)
+        top_websites_week = self.get_top_visited_websites(websites, start_time_week, end_time_week)
+        top_websites_day = self.get_top_visited_websites(websites, start_time_day, end_time_day)
+
+        result = {
+            "year": [{"website": website.domain, "visits": visits} for website, visits in top_websites_year],
+            "month": [{"website": website.domain, "visits": visits} for website, visits in top_websites_month],
+            "week": [{"website": website.domain, "visits": visits} for website, visits in top_websites_week],
+            "day": [{"website": website.domain, "visits": visits} for website, visits in top_websites_day]
+        }
+
+        return JsonResponse(result)
+#-------------------------------------------------------------------------------------------------------------------------------
+class TopVisitedUserWebsitesAPI(View):
+    def get_top_visited_websites(self, websites, start_time, end_time, user_id):
+        top_websites = []
+
+        for website in websites:
+            visits = HistoryRecord.objects.filter(
+                website=website,
+                user_id=user_id,
+                created__gte=start_time,
+                created__lt=end_time
+            ).count()
+
+            top_websites.append((website, visits))
+
+        top_websites.sort(key=lambda x: x[1], reverse=True)
+
+        return top_websites[:5]
+
+    def get(self, request,user_id):
+        now = datetime.now()
+        start_time_year = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        end_time_year = start_time_year.replace(year=start_time_year.year + 1)
+
+        start_time_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        end_time_month = start_time_month.replace(month=start_time_month.month + 1)
+
+        start_time_week = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        start_time_week -= timedelta(days=start_time_week.weekday())
+        end_time_week = start_time_week + timedelta(days=7)
+
+        start_time_day = start_time_week - timedelta(days=1)
+        end_time_day = start_time_week
+
+        print(user_id)
+        websites = Website.objects.all()
+
+        top_websites_year = self.get_top_visited_websites(websites, start_time_year, end_time_year, user_id)
+        top_websites_month = self.get_top_visited_websites(websites, start_time_month, end_time_month, user_id)
+        top_websites_week = self.get_top_visited_websites(websites, start_time_week, end_time_week, user_id)
+        top_websites_day = self.get_top_visited_websites(websites, start_time_day, end_time_day, user_id)
+
+        result = {
+            "year": [{"website": website.domain, "visits": visits} for website, visits in top_websites_year],
+            "month": [{"website": website.domain, "visits": visits} for website, visits in top_websites_month],
+            "week": [{"website": website.domain, "visits": visits} for website, visits in top_websites_week],
+            "day": [{"website": website.domain, "visits": visits} for website, visits in top_websites_day]
+        }
+
+        return JsonResponse(result)
+#-------------------------------------------------------------------------------------------------------------------------------

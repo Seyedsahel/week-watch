@@ -18,7 +18,7 @@ class User(AbstractBaseUser):
     objects = MyUserManager()
 
     def __str__(self):
-        return str(self.email) + " - " + str(self.full_name)
+        return str(self.email) + " - " + str(self.full_name) + " - " + str(self.id)
 
     def has_perm(self, perm, obj=None):
         return True
