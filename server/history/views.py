@@ -290,58 +290,115 @@ class WebsiteVisitsOnWeekAPI(View):
         domain = request.POST.get('domain')
 
         now = datetime.now()
-        start_time = now.replace(hour=0, minute=0, second=0, microsecond=0)
-        start_time -= timedelta(days=start_time.weekday())
-        end_time = start_time + timedelta(days=7)
+        start_time_week = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        start_time_week -= timedelta(days=start_time_week.weekday())
+        end_time_week = start_time_week + timedelta(days=7)
+
+        start_time_day = now - timedelta(days=1)
+        end_time_day = now
+
+        start_time_month = now - timedelta(days=30)
+        end_time_month = now
+
+        start_time_year = now - timedelta(days=365)
+        end_time_year = now
 
         try:
             website = Website.objects.get(domain=domain)
         except Website.DoesNotExist:
             return JsonResponse({'message': 'website not found!'}, status=404)
 
-        visits = HistoryRecord.objects.filter(
+        # Week
+        week_visits = HistoryRecord.objects.filter(
             website=website,
-            created__gte=start_time,
-            created__lt=end_time
-        )
+            created__gte=start_time_week,
+            created__lt=end_time_week
+        ).count()
 
-        unique_visits = []
-        visited_users = set()
-        for visit in visits:
-            user_id = visit.user.id
-            created = visit.created
+        # Day
+        day_visits = HistoryRecord.objects.filter(
+            website=website,
+            created__gte=start_time_day,
+            created__lt=end_time_day
+        ).count()
 
-            if (user_id, created.hour) in visited_users:
-                continue
+        # Month
+        month_visits = HistoryRecord.objects.filter(
+            website=website,
+            created__gte=start_time_month,
+            created__lt=end_time_month
+        ).count()
 
-            visited_users.add((user_id, created.hour))
-            unique_visits.append(visit)
+        # Year
+        year_visits = HistoryRecord.objects.filter(
+            website=website,
+            created__gte=start_time_year,
+            created__lt=end_time_year
+        ).count()
 
-        visit_count = len(unique_visits)
-
-        return JsonResponse({"visits": visit_count})
+        return JsonResponse({
+            "week": week_visits,
+            "day": day_visits,
+            "month": month_visits,
+            "year": year_visits
+        })
 #-------------------------------------------------------------------------------------------------------------------------------
 class WebsiteUniqueVisitsOnWeekAPI(View):
     def post(self, request):
         domain = request.POST.get('domain')
 
         now = datetime.now()
-        start_time = now.replace(hour=0, minute=0, second=0, microsecond=0)
-        start_time -= timedelta(days=start_time.weekday())
-        end_time = start_time + timedelta(days=7)
+        start_time_week = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        start_time_week -= timedelta(days=start_time_week.weekday())
+        end_time_week = start_time_week + timedelta(days=7)
+
+        start_time_day = now - timedelta(days=1)
+        end_time_day = now
+
+        start_time_month = now - timedelta(days=30)
+        end_time_month = now
+
+        start_time_year = now - timedelta(days=365)
+        end_time_year = now
 
         try:
             website = Website.objects.get(domain=domain)
         except Website.DoesNotExist:
             return JsonResponse({'message': 'website not found!'}, status=404)
 
-        visits = HistoryRecord.objects.filter(
+        # Week
+        week_visits = HistoryRecord.objects.filter(
             website=website,
-            created__gte=start_time,
-            created__lt=end_time
-        ).values('user').annotate(user_count=Count('user'))
+            created__gte=start_time_week,
+            created__lt=end_time_week
+        ).values('user').annotate(user_count=Count('user')).count()
 
-        visit_count = visits.count()
+        # Day
+        day_visits = HistoryRecord.objects.filter(
+            website=website,
+            created__gte=start_time_day,
+            created__lt=end_time_day
+        ).values('user').annotate(user_count=Count('user')).count()
 
-        return JsonResponse({"visits": visit_count})
+        # Month
+        month_visits = HistoryRecord.objects.filter(
+            website=website,
+            created__gte=start_time_month,
+            created__lt=end_time_month
+        ).values('user').annotate(user_count=Count('user')).count()
+
+        # Year
+        year_visits = HistoryRecord.objects.filter(
+            website=website,
+            created__gte=start_time_year,
+            created__lt=end_time_year
+        ).values('user').annotate(user_count=Count('user')).count()
+
+        return JsonResponse({
+            "week": week_visits,
+            "day": day_visits,
+            "month": month_visits,
+            "year": year_visits
+        })
+
 #-------------------------------------------------------------------------------------------------------------------------------
