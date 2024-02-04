@@ -6,3 +6,4 @@ class HistorySerializers(serializers.ModelSerializer):
     class Meta:
         model = HistoryRecord
         fields = ['link',]
+#-----------------------------------------------------------
