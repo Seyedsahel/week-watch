@@ -1,3 +1,4 @@
+from zoneinfo import available_timezones
 from django.db import models
 #-----------------------------------------------------
 class WebSiteCategory(models.Model):
@@ -10,6 +11,7 @@ class WebSiteCategory(models.Model):
 class Website(models.Model):
     domain = models.CharField(unique=True,max_length=100)
     categories = models.ManyToManyField(WebSiteCategory,related_name="websites")
+    can_save = models.BooleanField(default=True) 
 
     def __str__(self):
         return self.domain

@@ -44,6 +44,9 @@ def GetRecord(request):
         except Website.MultipleObjectsReturned:
             pass
 
+        if(website.can_save == False):
+            return JsonResponse({'message': 'can not save this record.'}, status=400)
+
         if(website.categories.all().count() == 0):
             thread = threading.Thread(target=FindWebsiteCategory, kwargs={'website': website,})
             thread.start()
