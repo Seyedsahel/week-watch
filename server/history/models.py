@@ -1,6 +1,7 @@
 from django.db import models
 from accounts.models import User
 from websites.models import Website
+from django.utils.timezone import make_aware
 #-----------------------------------------------------
 class HistoryRecord(models.Model):
     link = models.CharField(max_length=300)
@@ -14,6 +15,10 @@ class HistoryRecord(models.Model):
     def __str__(self):
         formatted_date = self.created.strftime("%d %H:%M:%S")
         return f"{self.user.email} - {self.website.domain} - {formatted_date}"
+
+    def clean(self):
+        super().clean()
+        self.closed = make_aware(self.closed)
 #-----------------------------------------------------
 
 

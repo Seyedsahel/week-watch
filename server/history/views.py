@@ -38,11 +38,11 @@ def GetRecord(request):
                 return JsonResponse({'message': 'link not True.'}, status=400)
 
         
+
         try:
-            website = Website.objects.get(domain=domain)
-        except Website.DoesNotExist:
-            website = Website(domain=domain)
-            website.save()
+            website, created = Website.objects.get_or_create(domain=domain)
+        except Website.MultipleObjectsReturned:
+            pass
 
         if(website.categories.all().count() == 0):
             thread = threading.Thread(target=FindWebsiteCategory, kwargs={'website': website,})
@@ -105,7 +105,7 @@ def GetRecord(request):
 def get_hours_on_category_websites(request):
     if request.method == "POST":
         data = request.POST
-        print(data)
+        # print(data)
 
 
         category_name = data.get("category_name")
@@ -135,7 +135,7 @@ def get_hours_on_category_websites(request):
 
         websites = category.websites.all()
 
-        print(websites)
+        # print(websites)
         duration = 0
 
         data = []
@@ -170,7 +170,7 @@ def get_hours_on_category_websites(request):
 def get_hours_on_website(request):
     if request.method == "POST":
         data = request.POST
-        print(data)
+        # print(data)
 
 
         domain = data.get("domain")
@@ -225,7 +225,6 @@ def get_hours_on_website(request):
 def get_hours_on_category(request):
     if request.method == "POST":
         data = request.POST
-        print(data)
 
 
         category_name = data.get("category_name")
@@ -483,7 +482,7 @@ class TopVisitedUserWebsitesAPI(View):
         start_time_day = start_time_week - timedelta(days=1)
         end_time_day = start_time_week
 
-        print(user_id)
+        # print(user_id)
         websites = Website.objects.all()
 
         top_websites_year = self.get_top_visited_websites(websites, start_time_year, end_time_year, user_id)

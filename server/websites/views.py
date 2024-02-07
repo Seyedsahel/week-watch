@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from .models import UnScraped
 from .models import WebSiteCategory
 from bs4 import BeautifulSoup
 import requests
@@ -61,7 +62,6 @@ def FindWebsiteCategory(website):
     website.categories.add(*WebSiteCategory.objects.filter(name__in=cats))
     website.save()
 # ----------------------------------web scraping---------------------------------------------------------------------------------------------
-unscraped_urls={}
 def find_link(url):
     try:
         response = requests.get(url)
@@ -79,8 +79,7 @@ def find_link(url):
             return https_links
     except Exception as e:
         print(f"An error occurred while scraping the URL: {url}")
-        print(e)
-        unscraped_urls[url]=e
+        UnScraped.report_website(url,e)
         return []
     
 def scrape(given_url,given_categories):
@@ -99,8 +98,7 @@ def scrape(given_url,given_categories):
             return keywords
         except Exception as e:
             print(f"An error occurred while scraping the URL: {given_url}")
-            print(e)
-            unscraped_urls[given_url]=e
+            UnScraped.report_website(given_url,e)
             return []
     
 
@@ -164,8 +162,7 @@ def scrape(given_url,given_categories):
             return cleans
         except Exception as e:
             print(f"An error occurred while scraping the URL: {given_url}")
-            print(e)
-            unscraped_urls[given_url]=e
+            UnScraped.report_website(given_url,e)
             return []
 
     def find_category():
@@ -185,7 +182,7 @@ def scrape(given_url,given_categories):
                 
                 
             else:
-                unscraped_urls[given_url]=page.status_code
+                UnScraped.report_website(given_url,page.status_code,"status code")
                 print(f"page.status_code:{page.status_code}")
             
             if len(main_keyword)>0:
@@ -214,8 +211,7 @@ def scrape(given_url,given_categories):
             return final_categories,page.status_code
         except Exception as e:
             print(f"An error occurred while scraping the URL: {given_url}")
-            print(e)
-            unscraped_urls[given_url]=e
+            UnScraped.report_website(given_url,e,e)
             return [],0
 
     found_categories,status_code=find_category()
