@@ -1,0 +1,35 @@
+:root {
+--primary: #3155e7;
+--primary-dark: #2345t55;
+--black:#010101;
+--gray-1: #788190;
+--gray-2:#c9caccf5;
+--white:#ffffff;
+--denger:#dc3545;
+}
+
+section.hero{
+    padding: 80px 0;
+}
+section.hero .text{
+    font-weight: 800;
+    font-size: 48px;
+    line-height: 73px;
+    color: var(--gray-2);
+}
+
+.buttons{
+    padding-top: 69px;
+}
+
+.buttons .btn{
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 24px;
+}
+
+.immmg{
+    margin-right: 0%;
+    padding-right: 0%;
+}
+
