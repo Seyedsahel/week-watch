@@ -28,8 +28,49 @@ section.hero .text{
     line-height: 24px;
 }
 
-.immmg{
-    margin-right: 0%;
-    padding-right: 0%;
+
+section.setup{
+    padding: 90px;
+    margin: 30px;
 }
+
+section.setup .text-header h3{
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 48px;
+    color: var(--denger);
+}
+
+section.setup .text-header p{
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 24px;
+    color: var(--white);
+    padding: 27px 0;
+}
+
+section.setup h5{
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 24px;
+    color: var(--white);
+    padding-bottom: 18px 0;
+}
+
+section.setup .desc p{
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 22px;
+    color: var(--gray-2);
+    max-width: 284px;
+    margin: 0 auto;
+}
+
+
+
+
+
+
+
+
 
