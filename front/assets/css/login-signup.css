@@ -129,21 +129,11 @@ body{
     }
 }
 
-.social-icons{
+.header{
     margin: 20px 0;
 }
 
-.social-icons a{
-    border: 1px solid #ccc;
-    background-color: #eee;
-    border-radius: 20%;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0 3px;
-    width: 40px;
-    height: 40px;
-}
+
 
 .toggle-container{
     position: absolute;
