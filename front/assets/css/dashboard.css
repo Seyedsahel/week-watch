@@ -15,9 +15,6 @@ li {
     list-style: none;
 }
 
-/* body {
-    font-family: 'Poppins', sans-serif;
-} */
 
 .wrapper {
     display: flex;
@@ -150,6 +147,7 @@ a.sidebar-link:hover {
     transition: all .2s ease-out;
 }
 
+
 #sidebar.expand .sidebar-link[data-bs-toggle="collapse"].collapsed::after {
     transform: rotate(45deg);
     transition: all .2s ease-out;
@@ -158,10 +156,6 @@ a.sidebar-link:hover {
 
 
 
-.avatar {
-    height: 40px;
-    width: 40px;
-}
 
 
 
